@@ -5,7 +5,7 @@
 
 from configparser import ConfigParser
 from pydantic import BaseModel
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Iterator, FrozenSet
 from gliner import GLiNER
 import logging
@@ -50,6 +50,7 @@ class NERResult(BaseModel):
 class AbstractNERInterface(ABC):
     """Abstract interface for the NER Model."""
 
+    @abstractmethod
     def extract(
         self, text: str, labels: FrozenSet[str], threshold: float
     ) -> Iterator[NERResult]:
