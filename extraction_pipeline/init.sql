@@ -5,10 +5,11 @@ CREATE TABLE IF NOT EXISTS db.extracted_entities (
   entity_text VARCHAR(100) NOT NULL,
   start_pos INT NOT NULL,
   end_pos INT NOT NULL,
+  score DECIMAL(4, 2) NOT NULL CHECK (score BETWEEN 0 AND 1),
   is_matched BOOLEAN NOT NULL,
   matched_entity_id VARCHAR(100) DEFAULT NULL,
   matched_entity_name VARCHAR(100) DEFAULT NULL,
-  updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  updated_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   -- Index for efficient lookup on these columns
   INDEX idx_uuid (uuid),
   INDEX idx_matched_entity_id (matched_entity_id)
