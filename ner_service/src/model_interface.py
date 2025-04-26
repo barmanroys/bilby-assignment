@@ -9,11 +9,12 @@ from abc import ABC
 from typing import Iterator, FrozenSet
 from gliner import GLiNER
 import logging
+from huggingface_hub.errors import LocalEntryNotFoundError
 
 logging.basicConfig(
     format="%(asctime)s|%(levelname)s: %(message)s",
     datefmt="%H:%M:%S, %d-%b-%Y",
-    level=logging.DEBUG,
+    level=logging.INFO,
 )
 
 
@@ -21,6 +22,9 @@ logging.basicConfig(
 config: ConfigParser = ConfigParser()
 assert config.read(filenames="config.ini")
 HF_PATH: str = config.get(section="model", option="HF_PATH")
+CACHE_DIR: str = config.get(
+    section="model", option="LOCAL_PATH"
+)  # Cache here to avoid repeated download
 
 DEFAULT_LABELS: FrozenSet[str] = frozenset(("Person", "Company", "Location"))
 
@@ -86,10 +90,20 @@ class ModelFactory:
 
     def __init__(self, hf_path: str = HF_PATH):
         """Initialise the model for caching."""
-        self._model_: GLiNER = GLiNER.from_pretrained(
-            pretrained_model_name_or_path=hf_path
-        )
-        logging.info(msg=f"Downloaded model from {hf_path}")
+        try:
+            # Look for a local model
+            self._model_: GLiNER = GLiNER.from_pretrained(
+                pretrained_model_name_or_path=hf_path,
+                cache_dir=CACHE_DIR,
+                local_files_only=True,
+            )
+            logging.info(msg=f"Loaded model from {CACHE_DIR}")
+        except LocalEntryNotFoundError:
+            # Failing to find a local model, fetch from hugging face hub and cache locally
+            self._model_: GLiNER = GLiNER.from_pretrained(
+                pretrained_model_name_or_path=hf_path, cache_dir=CACHE_DIR
+            )
+            logging.info(msg=f"Downloaded model from {hf_path}")
 
     def get_model_wrapper(self) -> AbstractNERInterface:
         """Get the NER Model client as a wrapper on the Gliner Model."""
