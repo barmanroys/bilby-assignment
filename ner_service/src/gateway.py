@@ -57,6 +57,7 @@ app.add_middleware(
     allow_methods=origins,
     allow_headers=origins,
 )
+MODEL_WRAPPER: AbstractNERInterface = ModelFactory().get_model_wrapper()
 
 
 @app.post(path="/extract_entities/")
@@ -82,8 +83,8 @@ async def extract(
     logging.info(
         msg=f"Got text of length {len(text)} with labels {labels} and confidence {threshold} on the ASGI"
     )
-    model_wrapper: AbstractNERInterface = ModelFactory().get_model_wrapper()
-    return tuple(model_wrapper.extract(text=text, labels=labels, threshold=threshold))
+
+    return tuple(MODEL_WRAPPER.extract(text=text, labels=labels, threshold=threshold))
 
 
 if __name__ == "__main__":

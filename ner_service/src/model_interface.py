@@ -86,7 +86,7 @@ class GlinerClient(AbstractNERInterface):
 
 
 class ModelFactory:
-    """Model factory class for the upstream clients to get the model wrapper."""
+    """Model factory class for the downstream modules to get the model wrapper."""
 
     def __init__(self, hf_path: str = HF_PATH):
         """Initialise the model for caching."""
@@ -97,13 +97,13 @@ class ModelFactory:
                 cache_dir=CACHE_DIR,
                 local_files_only=True,
             )
-            logging.info(msg=f"Loaded model from {CACHE_DIR}")
+            logging.debug(msg=f"Loaded model from {CACHE_DIR}")
         except LocalEntryNotFoundError:
             # Failing to find a local model, fetch from hugging face hub and cache locally
             self._model_: GLiNER = GLiNER.from_pretrained(
                 pretrained_model_name_or_path=hf_path, cache_dir=CACHE_DIR
             )
-            logging.info(msg=f"Downloaded model from {hf_path}")
+            logging.debug(msg=f"Downloaded model from {hf_path}")
 
     def get_model_wrapper(self) -> AbstractNERInterface:
         """Get the NER Model client as a wrapper on the Gliner Model."""
