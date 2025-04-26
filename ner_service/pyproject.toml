@@ -1,7 +1,7 @@
 [project]
 name = "ner-service"
 version = "0.1.0"
-description = "Named entity extractio service with Gliner Model"
+description = "Named entity extraction service with Gliner Model"
 readme = "README.md"
 requires-python = "==3.12.8"
 dependencies = [
