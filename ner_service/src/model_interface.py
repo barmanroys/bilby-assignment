@@ -6,7 +6,7 @@
 from configparser import ConfigParser
 from pydantic import BaseModel
 from abc import ABC, abstractmethod
-from typing import Iterator, FrozenSet
+from typing import Iterator, FrozenSet, List, Dict
 from gliner import GLiNER
 import logging
 from huggingface_hub.errors import LocalEntryNotFoundError

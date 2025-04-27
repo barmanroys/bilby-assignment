@@ -13,8 +13,9 @@ concurrent processing and withstand moderate user traffic.
 Author: Barman Roy, Swagato
 """
 
+from urllib.parse import unquote
 from typing import Sequence
-import os
+import os, re
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
@@ -84,6 +85,12 @@ async def extract(
         msg=f"Got text of length {len(text)} with labels {labels} and confidence {threshold} on the ASGI"
     )
 
+    # The text might be url encoded. Detect it with a regex and correct if so
+    text = (
+        unquote(string=text)
+        if re.search(pattern=r"%[0-9A-Fa-f]{2}", string=text)
+        else text
+    )
     return tuple(MODEL_WRAPPER.extract(text=text, labels=labels, threshold=threshold))
 
 

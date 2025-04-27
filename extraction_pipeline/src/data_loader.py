@@ -59,15 +59,14 @@ class DiskDataLoader(AbstractDataLoader):
         body in both languages (English and Chinese). The rest of the columns
         are discarded from any downstream processing.
         """
-        result: pl.LazyFrame = pl.scan_parquet(source=self._data_file_).select(
-            pl.col(
-                UUID_COL, EN_TITLE_COL, SOURCE_TITLE_COL, EN_BODY_COL, SOURCE_BODY_COL
-            )
+        result: pl.LazyFrame = pl.scan_parquet(source=self._data_file_)
+        # Concatenate the four relevant columns to form a unified title column
+        concatenator: pl.Expr = pl.concat_str(
+            exprs=pl.col(EN_TITLE_COL, EN_BODY_COL, SOURCE_TITLE_COL, SOURCE_BODY_COL)
+        ).alias(name=CONCAT_TITLE_COL)
+        # Add the concatenated column
+        # Discard the irrelevant columns (keep the UUID)
+        logging.debug(msg=f"Lazily scanned parquet file from {self._data_file_}.")
+        return result.with_columns(concatenator).select(
+            pl.col(CONCAT_TITLE_COL, UUID_COL)
         )
-        return result.with_columns(
-            pl.concat_str(
-                exprs=pl.col(
-                    EN_TITLE_COL, EN_BODY_COL, SOURCE_TITLE_COL, SOURCE_BODY_COL
-                )
-            ).alias(name=CONCAT_TITLE_COL)
-        ).select(pl.col(UUID_COL, CONCAT_TITLE_COL))
