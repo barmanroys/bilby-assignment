@@ -3,11 +3,11 @@
 
 """Implementation of the entity matcher between the extracted entity and source of truth entities."""
 
-from data_loader import os, DATA_DIR
-from ner_client import config, ABC, abstractmethod, pl, logging, ENT_TEXT_COL
 import ast
 from typing import List, Dict
 from concurrent.futures import ThreadPoolExecutor
+from data_loader import os, DATA_DIR
+from ner_client import config, ABC, abstractmethod, pl, logging, ENT_TEXT_COL
 
 # Columns related to the matching process
 SOT_ID_COL: str = config.get(section="columns", option="SOT_NAME")
@@ -71,6 +71,9 @@ class EntityMatcher(AbstractEntityMatcher):
         sot: pl.DataFrame = self._transform_sot_()
         result = result.join(
             other=sot, how="left", left_on=ENT_TEXT_COL, right_on=MATCHED_ENT_NAME_COL
+        )
+        logging.debug(
+            msg=f"Generating matching results for {len(result)} extracted entities against {len(sot)} SOT entities"
         )
         return result.with_columns(
             pl.when(pl.col(name=MATCHED_ENT_ID_COL).is_null())

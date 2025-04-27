@@ -7,10 +7,10 @@ services:
       # mysql -h 127.0.0.1 -p
       MYSQL_USER: ${USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
-      TZ: Asia/Singapore
-    volumes:
-      # Use read only mount to initialize the database
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
     ports:
       - "3306:3306"
+    volumes:
+      # This directory is used to initialise the database. Use read-only mount
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
