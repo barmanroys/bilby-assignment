@@ -9,6 +9,9 @@ import httpx
 from urllib.parse import urlunparse, urlencode, quote
 from typing import Dict
 
+# Silence verbose logs from httpx
+logging.getLogger(name="httpx").setLevel(level=logging.WARNING)
+
 # Service details
 DEFAULT_HOST: str = config.get(section="ner_service", option="HOST")
 DEFAULT_PORT: int = int(config.get(section="ner_service", option="PORT"))
@@ -93,7 +96,12 @@ class RemoteNERClient(AbstractNERClient):
                     "label": ENT_TYPE_COL,
                     "score": SCORE_COL,
                 }
-                return pl.LazyFrame(data=response.json()).rename(mapping=column_mapping)
+                # Deduplicate the same entity if it appears multiple times
+                return (
+                    pl.LazyFrame(data=response.json())
+                    .rename(mapping=column_mapping)
+                    .unique(subset=ENT_TEXT_COL)
+                )
 
 
 class NERClientFactory:
