@@ -13,22 +13,21 @@ concurrent processing and withstand moderate user traffic.
 Author: Barman Roy, Swagato
 """
 
-from urllib.parse import unquote
+import re
 from typing import Sequence
-import os, re
+from urllib.parse import unquote
+
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from uvicorn import run
+
 from model_interface import (
     FrozenSet,
     NERResult,
     AbstractNERInterface,
     ModelFactory,
-    config,
     logging,
     DEFAULT_LABELS,
 )
-
 
 DESCRIPTION: str = """
 A named entity recogniser application 
@@ -92,13 +91,3 @@ async def extract(
         else text
     )
     return tuple(MODEL_WRAPPER.extract(text=text, labels=labels, threshold=threshold))
-
-
-if __name__ == "__main__":
-    file: str = os.path.basename(p=__file__).split(sep=".")[0]
-    appname: str = f"{file}:app"
-    host: str = config.get(
-        section="asgi", option="HOST"
-    )  # Expose the service to the network via 0.0.0.0
-    port: int = int(config.get(section="asgi", option="PORT"))
-    run(app=appname, host=host, port=port, workers=os.cpu_count())

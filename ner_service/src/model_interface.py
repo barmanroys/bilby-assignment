@@ -3,20 +3,20 @@
 
 """This file presents the abstract interface and implementation of an NER Model."""
 
-from configparser import ConfigParser
-from pydantic import BaseModel
-from abc import ABC, abstractmethod
-from typing import Iterator, FrozenSet, List, Dict
-from gliner import GLiNER
 import logging
+from abc import ABC, abstractmethod
+from configparser import ConfigParser
+from typing import Iterator, FrozenSet
+
+from gliner import GLiNER
 from huggingface_hub.errors import LocalEntryNotFoundError
+from pydantic import BaseModel
 
 logging.basicConfig(
     format="%(asctime)s|%(levelname)s: %(message)s",
     datefmt="%H:%M:%S, %d-%b-%Y",
     level=logging.INFO,
 )
-
 
 # Load basic configurations and the default hugging face path
 config: ConfigParser = ConfigParser()
