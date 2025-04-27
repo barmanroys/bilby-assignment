@@ -1,16 +1,23 @@
 services:
   database:
     image: mysql
-    restart: always
+    container_name: database-container
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       # mysql -h 127.0.0.1 -p
       MYSQL_USER: ${USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
     ports:
       - "3306:3306"
     volumes:
       # This directory is used to initialise the database. Use read-only mount
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
+  ner:
+    build:
+      context: ./ner_service/ # Directory containing the Dockerfile
+      dockerfile: Dockerfile
+    container_name: ner-service-container
+    ports:
+      - "8081:8081"
