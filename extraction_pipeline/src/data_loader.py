@@ -3,8 +3,9 @@
 
 """This file presents the abstract interface and implementation of a data loader."""
 
+import logging
+import os
 from abc import ABC, abstractmethod
-import logging, os
 from configparser import ConfigParser
 
 import polars as pl
@@ -27,13 +28,17 @@ EN_BODY_COL: str = config.get(section="columns", option="EN_BODY")
 SOURCE_BODY_COL: str = config.get(section="columns", option="SOURCE_BODY")
 CONCAT_TITLE_COL: str = config.get(section="columns", option="CONCAT_TITLE")
 
-
 DATA_DIR: str = config.get(section="local_resource", option="DATA_DIR")
 DOC_SOURCE: str = config.get(section="local_resource", option="DOC_SOURCE")
 
 
 class AbstractDataLoader(ABC):
     """Load the latest data."""
+
+    @abstractmethod
+    def fetch_raw_data(self) -> pl.LazyFrame:
+        """Fetch the raw data in the form of a dataframe to persist in the same database as NER result."""
+        raise NotImplementedError
 
     @abstractmethod
     def fetch_latest_data(self) -> pl.LazyFrame:
@@ -70,3 +75,7 @@ class DiskDataLoader(AbstractDataLoader):
         return result.with_columns(concatenator).select(
             pl.col(CONCAT_TITLE_COL, UUID_COL)
         )
+
+    def fetch_raw_data(self) -> pl.LazyFrame:
+        """Fetch the raw data in the form of a dataframe to persist in the same database as NER result."""
+        return pl.scan_parquet(source=self._data_file_)

@@ -16,8 +16,15 @@ class AbstractPersistenceInterface(ABC):
     """Define the interface to persist data."""
 
     @abstractmethod
-    def persist_ner_results(self, results: pl.DataFrame) -> None:
-        """Persist the results in the database."""
+    def persist_raw_data(
+        self, data: pl.DataFrame, table_name: str = "documents"
+    ) -> None:
+        """Persist raw data on a given table."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def persist_ner_results(self, results: pl.DataFrame) -> int:
+        """Persist the results in the database and return the number of rows inserted"""
         raise NotImplementedError
 
 
@@ -58,36 +65,43 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
         """Initialise the client with an asynchronous engine."""
         self._engine_: EngineContext = engine
         self._table_name_: str = table_name
+        # This expression is used to convert the UUID column to Binary for efficient storage.
+        # It is kept as a variable here to avoid duplication inside the methods.
+        self._converter_: pl.Expr = pl.col(name=UUID_COL).map_elements(
+            function=lambda doc_id: uuid.UUID(hex=doc_id).bytes,
+            return_dtype=pl.Binary,
+        )
 
-    def persist_ner_results(self, results: pl.DataFrame) -> None:
+    def persist_raw_data(
+        self, data: pl.DataFrame, table_name: str = "documents"
+    ) -> None:
+        """Use this method to persist the document data with full texts in the MySQL table."""
+        with self._engine_ as engine:
+            row_count: int = data.write_database(
+                table_name=table_name,
+                connection=engine,
+                if_table_exists="append",
+            )
+            logging.debug(
+                msg=f"{row_count} rows of raw data inserted into {table_name}"
+            )
+
+    def persist_ner_results(self, results: pl.DataFrame) -> int:
         """Persist the result containing the document UUID, extracted entities and matched entities with SoT"""
 
         document_id: str = next(iter(results.select(pl.col(name=UUID_COL)).to_series()))
         # Cast the UUID column as binary data to match the database schema
-        results = results.with_columns(
-            pl.col(name=UUID_COL).map_elements(
-                function=lambda doc_id: uuid.UUID(hex=doc_id).bytes,
-                return_dtype=pl.Binary,
+        results = results.with_columns(self._converter_)
+        with self._engine_ as engine:
+            row_count: int = results.write_database(
+                table_name=self._table_name_,
+                connection=engine,
+                if_table_exists="append",
             )
-        )
-        try:
-            with self._engine_ as engine:
-                row_count: int = results.write_database(
-                    table_name=self._table_name_,
-                    connection=engine,
-                    if_table_exists="append",
-                )
-            logging.info(
+            logging.debug(
                 msg=f"{row_count} rows inserted into {self._table_name_} for document {document_id}."
             )
-        except Exception as e:
-            # Catch a broad exception for external dependencies
-            logging.error(
-                msg=f"Document {document_id} encountered error {e}.",
-                exc_info=True,
-                stack_info=True,
-                stacklevel=2,
-            )
+        return row_count
 
 
 class PersistenceClientFactory:
