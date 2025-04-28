@@ -1,17 +1,11 @@
-# The dockerfile to package the ASGI service
-
+# The dockerfile to package the extraction job
 # Necessary environment variables
-# MYSQL_USER=${USER}
-# MYSQL_PASSWORD Set whatever you want
-# MYSQL_DATABASE = "db"
-# MYSQL_HOST="database" # for Docker container orchestration
-
-# To build
-# docker build --tag=ent-extraction ./
-# To run
-# docker run --name extraction_container --network bilby-assignment_bilby -e MYSQL_USER=$USER \
-#  -e MYSQL_PASSWORD=$MYSQL_PASSWORD -e MYSQL_DATABASE=$MYSQL_DATABASE -e NER_HOST=$NER_HOST -e MYSQL_HOST=$MYSQL_HOST
-
+# MYSQL_USER
+# MYSQL_PASSWORD
+# MYSQL_DATABASE
+# MYSQL_HOST="database" # for docker compose orchestration
+# NER_HOST = ner # For docker compose orchestration
+# Also, include the container in the local bridge network called `bilby-assignment_bilby` for service discovery.
 
 
 ARG DISTRIBUTION=ghcr.io/astral-sh/uv:debian-slim
