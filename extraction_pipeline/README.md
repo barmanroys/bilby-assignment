@@ -4,14 +4,14 @@ The project reads the raw document data (containing title, unique document id an
 to recognise the named entities and inserts the recognised entities into a MySQL database.
 The named entity recognition task is isolated from the main pipeline by a containerised service interface.
 
-##### Infra Requirements
+##### Infrastructure Requirements
 
 Make sure you got
 
 * recent versions
-  of <a href="https://docs.docker.com/get-started/overview/" target="_top">Docker daemon and CLI</a> installed. The
-  current repository was tested on Docker version 28.1.1.
-* a POSIX environment (tested on Ubuntu 24.04) with the following variables set appropriately for your
+  of <a href="https://docs.docker.com/get-started/overview/" target="_top">Docker daemon, compose and CLI</a> installed.
+  The development version is Docker 28.1.1.
+* a POSIX environment (I tested on Ubuntu 24.04) with the following variables set appropriately for your
   scripts/container to access them
 
 | Environment <br/> Variable | Value                                                   
@@ -51,7 +51,7 @@ and keying in the password when prompted.
 
 #### Database Schema
 
-In the database, two tables are created
+The schema can be seen from the database initialisation script. Basically, two tables are created
 
 * `documents`: Contains the raw documents data after converting the UUID to binary format.
 * `extracted_entities`: Results of the NER pipeline with one row for each entity from each document.
