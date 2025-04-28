@@ -3,17 +3,22 @@
 
 """This file presents the abstract interface and implementation of a data loader."""
 
-from data_loader import config, ABC, abstractmethod, logging, pl
+import os
 from contextlib import AbstractAsyncContextManager
-import httpx
-from urllib.parse import urlunparse, urlencode, quote
 from typing import Dict
+from urllib.parse import urlunparse, urlencode, quote
+
+import httpx
+
+from data_loader import config, ABC, abstractmethod, logging, pl
 
 # Silence verbose logs from httpx
 logging.getLogger(name="httpx").setLevel(level=logging.WARNING)
 
 # Service details
-DEFAULT_HOST: str = config.get(section="ner_service", option="HOST")
+DEFAULT_HOST: str = os.environ[
+    "NER_HOST"
+]  # To ensure connectivity from inside the docker network
 DEFAULT_PORT: int = int(config.get(section="ner_service", option="PORT"))
 DEFAULT_ROUTE: str = config.get(section="ner_service", option="ROUTE")
 

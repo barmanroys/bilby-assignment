@@ -14,6 +14,8 @@ services:
     volumes:
       # This directory is used to initialise the database. Use read-only mount
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - "bilby"
 
   ner:
     build:
@@ -22,3 +24,9 @@ services:
     container_name: ner-service-container
     ports:
       - "8081:8081"
+    networks:
+      - "bilby"
+
+networks:
+  bilby:
+    driver: bridge
