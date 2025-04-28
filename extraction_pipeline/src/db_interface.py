@@ -61,6 +61,8 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
 
     def persist_ner_results(self, results: pl.DataFrame) -> None:
         """Persist the result containing the document UUID, extracted entities and matched entities with SoT"""
+
+        document_id: str = next(iter(results.select(pl.col(name=UUID_COL)).to_series()))
         # Cast the UUID column as binary data to match the database schema
         results = results.with_columns(
             pl.col(name=UUID_COL).map_elements(
@@ -68,13 +70,24 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
                 return_dtype=pl.Binary,
             )
         )
-        with self._engine_ as engine:
-            row_count: int = results.write_database(
-                table_name=self._table_name_,
-                connection=engine,
-                if_table_exists="append",
+        try:
+            with self._engine_ as engine:
+                row_count: int = results.write_database(
+                    table_name=self._table_name_,
+                    connection=engine,
+                    if_table_exists="append",
+                )
+            logging.info(
+                msg=f"{row_count} rows inserted into {self._table_name_} for document {document_id}."
             )
-        logging.info(msg=f"{row_count} rows inserted into {self._table_name_}.")
+        except Exception as e:
+            # Catch a broad exception for external dependencies
+            logging.error(
+                msg=f"Document {document_id} encountered error {e}.",
+                exc_info=True,
+                stack_info=True,
+                stacklevel=2,
+            )
 
 
 class PersistenceClientFactory:
