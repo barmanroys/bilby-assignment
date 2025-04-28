@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS db.extracted_entities (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  uuid BINARY(16) NOT NULL,
+  uuid BINARY(16) NOT NULL, -- The Data type is chosen to make the the storage more space efficient
   entity_type ENUM('Person', 'Company', 'Location') NOT NULL,
   entity_text VARCHAR(100) NOT NULL,
   start_pos INT NOT NULL,

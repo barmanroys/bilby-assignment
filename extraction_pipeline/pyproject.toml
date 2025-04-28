@@ -10,6 +10,8 @@ dependencies = [
     "jupyter>=1.1.1",
     "mysql-connector-python>=9.3.0",
     "notebook>=7.4.1",
+    "pandas>=2.2.3",
     "polars>=1.28.0",
+    "pyarrow>=20.0.0",
     "sqlalchemy>=2.0.40",
 ]
