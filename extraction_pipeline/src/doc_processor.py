@@ -99,7 +99,6 @@ class AsyncDocProcessor(AbstractAsyncDocProcessor):
     async def insert_raw_data(self, df: pl.LazyFrame) -> None:
         """This function is for inserting the raw document data to the database."""
         self._rdb_client_.persist_raw_data(data=await df.collect_async())
-        logging.info(msg=f"Raw data persisted on the MySQL table.")
 
 
 class DocumentProcessorFactory:

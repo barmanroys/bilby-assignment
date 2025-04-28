@@ -53,9 +53,13 @@ and keying in the password when prompted.
 
 In the database, two tables are created
 
-* `documents`: Contains the raw documents data, without any change. (Recommended to convert the UUID to Binary and
-  certain data clean-up)
+* `documents`: Contains the raw documents data after converting the UUID to binary format.
 * `extracted_entities`: Results of the NER pipeline with one row for each entity from each document.
 
 Instead of merging them into the same table, the schema is partially normalised to avoid storing the long document
-bodies multiple times for each entity. 
+bodies multiple times for each entity. The unified view (combining document details and named entities) can be obtained
+by
+
+```sql
+SELECT * FROM extracted_entities JOIN documents ON extracted_entities.uuid=documents.uuid;
+```

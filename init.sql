@@ -1,3 +1,16 @@
+-- Raw document table
+CREATE TABLE IF NOT EXISTS db.documents (
+  uuid BINARY(16) PRIMARY KEY NOT NULL,
+  title_en TEXT NOT NULL,
+  title_source_language TEXT NOT NULL,
+  body_en LONGTEXT NOT NULL,
+  body_source_language LONGTEXT NOT NULL,
+  summary_en MEDIUMTEXT NOT NULL,
+  summary_source_language MEDIUMTEXT NOT NULL,
+  publication_date VARCHAR(15) NOT NULL,
+  url VARCHAR(100) NOT NULL,
+  source VARCHAR(50) NOT NULL
+);
 
 -- Entity table
 CREATE TABLE IF NOT EXISTS db.extracted_entities (
@@ -14,20 +27,6 @@ CREATE TABLE IF NOT EXISTS db.extracted_entities (
   updated_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   -- Index for efficient lookup on these columns
   INDEX idx_uuid (uuid),
-  INDEX idx_matched_entity_id (matched_entity_id)
+  INDEX idx_matched_entity_id (matched_entity_id),
+  FOREIGN KEY (uuid) REFERENCES documents(uuid)
 ) DEFAULT CHARSET = utf8mb4;
-
--- Raw document table
-CREATE TABLE IF NOT EXISTS db.documents (
-  id INT AUTO_INCREMENT PRIMARY KEY KEY,
-  uuid VARCHAR(100) NOT NULL,
-  title_en TEXT NOT NULL,
-  title_source_language TEXT NOT NULL,
-  body_en LONGTEXT NOT NULL,
-  body_source_language LONGTEXT NOT NULL,
-  summary_en MEDIUMTEXT NOT NULL,
-  summary_source_language MEDIUMTEXT NOT NULL,
-  publication_date VARCHAR(15) NOT NULL,
-  url VARCHAR(100) NOT NULL,
-  source VARCHAR(50) NOT NULL
-);

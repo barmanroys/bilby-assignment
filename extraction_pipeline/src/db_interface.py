@@ -8,6 +8,7 @@ from contextlib import AbstractContextManager
 from typing import Optional, cast, Any
 
 from sqlalchemy import Engine, create_engine
+from sqlalchemy.exc import IntegrityError
 
 from data_loader import ABC, abstractmethod, pl, logging, UUID_COL, config, os
 
@@ -76,15 +77,21 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
         self, data: pl.DataFrame, table_name: str = "documents"
     ) -> None:
         """Use this method to persist the document data with full texts in the MySQL table."""
+        data = data.with_columns(self._converter_)
         with self._engine_ as engine:
-            row_count: int = data.write_database(
-                table_name=table_name,
-                connection=engine,
-                if_table_exists="append",
-            )
-            logging.debug(
-                msg=f"{row_count} rows of raw data inserted into {table_name}"
-            )
+            try:
+                row_count: int = data.write_database(
+                    table_name=table_name,
+                    connection=engine,
+                    if_table_exists="append",
+                )
+                logging.info(
+                    msg=f"{row_count} rows of raw data inserted into {table_name}"
+                )
+            except IntegrityError:
+                logging.error(
+                    msg=f"Raw data insertion skipped because primary key already exists."
+                )
 
     def persist_ner_results(self, results: pl.DataFrame) -> int:
         """Persist the result containing the document UUID, extracted entities and matched entities with SoT"""
