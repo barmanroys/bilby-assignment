@@ -30,4 +30,4 @@ echo "AIRFLOW_HOME=$(pwd)/" >> .env
 DAG_ID="ent_extraction_dag" # Defined in the dag file
 
 # The following line triggers the DAG test run. If completed successfully, the database will be populated with the extracted entities.
-uv run --env-file .env airflow dags test $DAG_ID
+time uv run --env-file .env airflow dags test $DAG_ID
