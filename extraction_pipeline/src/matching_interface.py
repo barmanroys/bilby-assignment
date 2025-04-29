@@ -50,6 +50,7 @@ class EntityMatcher(AbstractEntityMatcher):
         aliases: List[str] = ast.literal_eval(node_or_string=row[SOT_ALIAS_COL]) + [
             name
         ]
+        aliases = list(set(aliases))  # Deduplicate aliases
         return pl.DataFrame(
             data={
                 MATCHED_ENT_ID_COL: [name] * len(aliases),
@@ -75,16 +76,22 @@ class EntityMatcher(AbstractEntityMatcher):
         logging.debug(
             msg=f"Generating matching results for {len(result)} extracted entities against {len(sot)} SOT entities"
         )
-        return result.with_columns(
+
+        # The left join above removes the joining column from the right table.
+        # So calculate the entity name column here.
+        entity_name_col: pl.Expr = (
             pl.when(pl.col(name=MATCHED_ENT_ID_COL).is_null())
             .then(statement=None)
             .otherwise(statement=pl.col(name=ENT_TEXT_COL))
-            .alias(name=MATCHED_ENT_NAME_COL),
+            .alias(name=MATCHED_ENT_NAME_COL)
+        )
+        matched_col: pl.Expr = (
             pl.when(pl.col(name=MATCHED_ENT_ID_COL).is_null())
             .then(statement=False)
             .otherwise(statement=True)
-            .alias(name=MATCHED_COL),
+            .alias(name=MATCHED_COL)
         )
+        return result.with_columns(matched_col, entity_name_col)
 
 
 class EntityMatcherFactory:
