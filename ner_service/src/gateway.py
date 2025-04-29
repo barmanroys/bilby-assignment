@@ -7,9 +7,6 @@ Asynchronous gateway interface to expose the named entity recogniser
 For development, start it by
     $ uvicorn gateway:app --host=0.0.0.0 --port=8081 --reload
 
-Skip the reload option above in containerised production environment to exploit
-concurrent processing and withstand moderate user traffic.
-
 Author: Barman Roy, Swagato
 """
 
@@ -30,17 +27,17 @@ from model_interface import (
 )
 
 DESCRIPTION: str = """
-A named entity recogniser application 
+A named entity recogniser application
 
 # Clients
 
-You will be able to POST 
+You will be able to POST
 * text body (mandatory)
 * labels (optional)
 * threshold confidence (optional)
 
 
-and get a collection of named entities with metadata (position, label, confidence). 
+and get a collection of named entities with metadata (position, label, confidence).
 """
 
 app: FastAPI = FastAPI(

@@ -10,6 +10,7 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
       TZ: "Asia/Singapore"
     ports:
+      # Expose the service to enable the end user to verify when the tables are populated
       - "3306:3306"
     restart: "no"
     volumes:
@@ -24,12 +25,14 @@ services:
       dockerfile: Dockerfile
     container_name: ner-service-container
     restart: "no"
-    ports:
-      - "8081:8081"
+    environment:
+      TZ: "Asia/Singapore"
     networks:
       - "bilby"
 
 networks:
   # Use this network for service discovery by among containers
+  # As per docker documentation, a prefix based on the parent directory name is added to the network name
+  # https://docs.docker.com/compose/how-tos/networking/
   bilby:
     driver: bridge

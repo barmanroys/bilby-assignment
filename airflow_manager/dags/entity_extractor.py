@@ -32,11 +32,12 @@ with DAG(
         "MYSQL_PASSWORD": os.environ["MYSQL_PASSWORD"],
         "MYSQL_DATABASE": os.environ["MYSQL_DATABASE"],
         "NER_HOST": os.environ["NER_HOST"],
+        "TZ": "Asia/Singapore",
     }
     run_ent_extraction: BaseOperator = DockerOperator(
         task_id="run_ent_extraction",  # Defined here
         image="ent-extraction",  # Local Docker image, defined in the extraction pipeline image building script
-        network_mode="bilby-assignment_bilby",  # Local Docker network, defined in the compose manifest
+        network_mode="bilby-assignment_bilby",  # Local Docker network, defined in the compose manifest together with the directory suffix
         auto_remove="success",  # Automatically remove the container after it exits
         environment=env_vars,  # This will pick up the environment variables
         tty=True,  # To enable interactive mode

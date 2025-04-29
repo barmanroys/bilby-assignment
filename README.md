@@ -66,10 +66,16 @@ SELECT * FROM extracted_entities JOIN documents ON extracted_entities.uuid=docum
 ```
 
 #### Airflow Dag
-The task is made available as an Airflow DAG in the `airflow_manager/dags` directory. The whole DAG has only one step, as the intermediate results are kept in-process, which meets the requirement specified in the instruction. The correct incorporation the DAG in airflow can be verified in one of two ways.
+Following the sample codes provided, the task is made available as an Airflow DAG in the `airflow_manager/dags` directory. The DAG has only one step, as the intermediate results are kept in-process, which meets the requirement specified in the instruction. The correct incorporation of the DAG in airflow can be verified in either of two ways.
 
 ##### Airflow UI
-Follow the instruction for setting up the Airflow standalone from the `airflow_manager` directory and the Airflow dashboard should be visible at http://localhost:8080. You can log in and fire the DAG manually.
+
+For this, first fire up the database and NER services by
+
+```sh
+docker-compose up
+```
+Then follow the instruction for setting up the Airflow standalone from the `airflow_manager` directory and the Airflow dashboard should be visible at http://localhost:8080. You can log in and trigger the DAG manually.
 
 ##### Airflow CLI
 Alternatively, you can use the Airflow CLI to test the dag, which is incorporated in the `end-to-end-test.sh` script. Just run it via
