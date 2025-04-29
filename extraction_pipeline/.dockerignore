@@ -16,3 +16,4 @@ test_resource/**
 Dockerfile
 uv.lock
 deploy.sh
+sample_out_dump/*
