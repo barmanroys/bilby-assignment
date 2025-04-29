@@ -44,7 +44,7 @@ class EngineContext(AbstractContextManager):
     def __enter__(self) -> Engine:
         """Create an engine and acquire the connection."""
         self.engine = create_engine(url=self.uri)
-        logging.debug(msg=f"Engine created.")
+        logging.debug(msg="Engine created.")
         return cast(Engine, self.engine)
 
     def __exit__(
@@ -90,7 +90,7 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
                 )
             except IntegrityError:
                 logging.error(
-                    msg=f"Raw data insertion skipped because primary key already exists."
+                    msg="Raw data insertion skipped because primary key already exists."
                 )
 
     def persist_ner_results(self, results: pl.DataFrame) -> int:
@@ -127,7 +127,7 @@ class PersistenceClientFactory:
         """Initialise the database url with the supplied parameters."""
         connector = f"{dialect}+{driver}://{user}:{password}@{host}:{port}"
         self.uri: str = os.path.join(connector, db)
-        logging.debug(msg=f"Factory initialised with database access details")
+        logging.debug(msg="Factory initialised with database access details")
 
     def get_client(self) -> AbstractPersistenceInterface:
         """Get the MySQL client."""

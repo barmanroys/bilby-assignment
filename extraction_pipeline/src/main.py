@@ -19,7 +19,7 @@ class Main:
         """Initialise the main with document processor."""
         self._dp_: AbstractAsyncDocProcessor = doc_processor
         self._dl_: AbstractDataLoader = dl
-        logging.debug(msg=f"Document processor and data loader initialised at main.")
+        logging.debug(msg="Document processor and data loader initialised at main.")
 
     async def run(self):
         """Run the job for all documents asynchronously."""
