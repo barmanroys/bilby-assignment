@@ -11,6 +11,7 @@ services:
       TZ: "Asia/Singapore"
     ports:
       - "3306:3306"
+    restart: "no"
     volumes:
       # This directory is used to initialise the database. Use read-only mount
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -23,9 +24,11 @@ services:
       context: ./ner_service/ # Directory containing the Dockerfile
       dockerfile: Dockerfile
     container_name: ner-service-container
+    restart: "no"
     networks:
       - "bilby"
 
 networks:
+  # Use this network for service discovery by among containers
   bilby:
     driver: bridge

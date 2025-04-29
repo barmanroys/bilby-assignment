@@ -4,3 +4,4 @@
 **/__pycache__/**
 **uv.lock
 ner_service/src/gliner_local_copy/
+**.env
