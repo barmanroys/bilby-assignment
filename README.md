@@ -9,20 +9,21 @@ The named entity recognition task is isolated from the main pipeline by a contai
 Make sure you got
 
 * recent versions
-  of <a href="https://docs.docker.com/get-started/overview/" target="_top">Docker daemon, compose and CLI</a> installed.
+  of [Docker daemon, compose and CLI](https://docs.docker.com/get-started/overview/) installed.
   The development version is Docker 28.1.1.
+* [UV package manager](https://github.com/astral-sh/uv)
 * a POSIX environment (I tested on Ubuntu 24.04) with the following variables set appropriately for your
   scripts/container to access them
 
-| Environment <br/> Variable | Value                                                   
+| Environment <br/> Variable | Value
 |----------------------------|---------------------------------------------------------|
-| MYSQL_DATABASE             | `db`                                                    | 
-| USER                       | Usual POSIX user name, will be used for database access | 
-| MYSQL_PASSWORD             | Any value you want                                      | 
+| MYSQL_DATABASE             | `db`                                                    |
+| USER                       | Usual POSIX user name, will be used for database access |
+| MYSQL_PASSWORD             | Any value you want                                      |
 | NER_HOST                   | `ner`                                                   |
-| MYSQL_HOST                 | `database`                                              
+| MYSQL_HOST                 | `database`
 
-With this setup, run the following from the Git root repository.
+With this setup, if you run the following from the Git root repository.
 
 ```shell
 docker compose up
@@ -36,7 +37,7 @@ This should
 
 #### Effects of Running the Task
 
-* Copy the raw document data to the MySQL database (this is intended to make the fields available in the same database)
+* Copy the raw document data to the MySQL database (this is intended to make the fields available in the same database). If the raw documents (identified by UUID) already exist, this phase is skipped.
 * Run the named entity recogniser pipeline to insert the named entities (together with SoT matched entities) into the
   database in a separate table
 
@@ -47,7 +48,7 @@ You can use tools like DBeaver to access the database or go to the MySQL console
 mysql -h 127.0.0.1 -p
 ```
 
-and keying in the password when prompted.
+and keying in the password (set by the environment variable) when prompted.
 
 #### Database Schema
 
@@ -63,3 +64,6 @@ by
 ```sql
 SELECT * FROM extracted_entities JOIN documents ON extracted_entities.uuid=documents.uuid;
 ```
+
+#### Airflow Dag
+The task is made available as an Airflow DAG in the `airflow_manager/dags` directory. The whole DAG has only one step, as the intermediate results are kept in process, which meets the requirement specified in the instruction.
