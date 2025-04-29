@@ -25,7 +25,6 @@ printf "%s ETL image built, performing a test run via airflow.\n" "$(TIMESTAMP)"
 
 # Now run the image via airflow. First few lines are boilerplates to set up
 cd ../airflow_manager
-rm .env
 cp .env.example .env
 echo "AIRFLOW_HOME=$(pwd)/" >> .env
 DAG_ID="ent_extraction_dag" # Defined in the dag file
