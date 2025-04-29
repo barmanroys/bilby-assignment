@@ -17,11 +17,11 @@ Make sure you got
 
 | Environment <br/> Variable | Value
 |----------------------------|---------------------------------------------------------|
-| MYSQL_DATABASE             | `db`                                                    |
-| USER                       | Usual POSIX user name, will be used for database access |
-| MYSQL_PASSWORD             | Any value you want                                      |
-| NER_HOST                   | `ner`                                                   |
-| MYSQL_HOST                 | `database`
+| MYSQL_DATABASE             | `db`, name of the database to be created.                                                    |
+| MYSQL_USER                       | $USER, the usual POSIX user name, will be used for database access |
+| MYSQL_PASSWORD             | Any value you want, but without space or special characters                                      |
+| NER_HOST                   | `ner`, the service name for named entity recognition                                                    |
+| MYSQL_HOST                 | `database`, the service name for the MySQL database
 
 With this setup, if you run the following from the Git root repository.
 
@@ -41,14 +41,14 @@ This should
 * Run the named entity recogniser pipeline to insert the named entities (together with SoT matched entities) into the
   database in a separate table
 
-A user can verify the results by logging into the database (exposed at port 3306 of the host) and checking the table.
+A user can verify the results by logging in to the database (exposed at port 3306 of the host) and checking the table.
 You can use tools like DBeaver to access the database or go to the MySQL console by
 
 ```shell
 mysql -h 127.0.0.1 -p
 ```
 
-and keying in the password (set by the environment variable) when prompted.
+and keying in the password (set by the environment variable) when prompted. The sample output data can be found in the `extraction_pipeline/sample_out_dump` directory.
 
 #### Database Schema
 
@@ -66,4 +66,14 @@ SELECT * FROM extracted_entities JOIN documents ON extracted_entities.uuid=docum
 ```
 
 #### Airflow Dag
-The task is made available as an Airflow DAG in the `airflow_manager/dags` directory. The whole DAG has only one step, as the intermediate results are kept in process, which meets the requirement specified in the instruction.
+The task is made available as an Airflow DAG in the `airflow_manager/dags` directory. The whole DAG has only one step, as the intermediate results are kept in-process, which meets the requirement specified in the instruction. The correct incorporation the DAG in airflow can be verified in one of two ways.
+
+##### Airflow UI
+Follow the instruction for setting up the Airflow standalone from the `airflow_manager` directory and the Airflow dashboard should be visible at http://localhost:8080. You can log in and fire the DAG manually.
+
+##### Airflow CLI
+Alternatively, you can use the Airflow CLI to test the dag, which is incorporated in the `end-to-end-test.sh` script. Just run it via
+```sh
+./end-to-end-test.sh
+```
+which takes care of starting all necessary services and running the DAG.

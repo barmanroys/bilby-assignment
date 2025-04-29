@@ -19,12 +19,13 @@ services:
       - "bilby"
 
   ner:
-    # Do not expose ports for this service
     build:
       context: ./ner_service/ # Directory containing the Dockerfile
       dockerfile: Dockerfile
     container_name: ner-service-container
     restart: "no"
+    ports:
+      - "8081:8081"
     networks:
       - "bilby"
 
