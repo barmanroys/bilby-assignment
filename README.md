@@ -82,4 +82,4 @@ Alternatively, you can use the Airflow CLI to test the dag, which is incorporate
 ```sh
 ./end-to-end-test.sh
 ```
-which takes care of starting all necessary services and running the DAG.
+which takes care of starting all necessary services and running the DAG. Running the above script takes about 11 minutes, but that is because there is a 10 minute delay to fire up the services for the first time. As a one-time start up cost, is not a production bottleneck. Further, the delay can be minimised in a cloud environment with higher bandwidth for network connectivity (compared to my home environment).
