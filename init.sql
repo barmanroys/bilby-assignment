@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS db.extracted_entities (
     -- Index for efficient lookup on these columns
     INDEX idx_uuid (uuid),
     INDEX idx_matched_entity_id (matched_entity_id),
-    FOREIGN KEY (uuid) REFERENCES documents (uuid) -- Link back to the document table using this column as a foreign key
+    FOREIGN KEY (uuid) REFERENCES documents (uuid) ON DELETE CASCADE -- Link back to the document table using this column as a foreign key
 ) DEFAULT CHARSET = utf8mb4;
 
--- Reset the database to ensure a clean start and bypass any previous caching by InnoDB
+-- Reset the database to ensure a clean slate and bypass any InnoDB caching
 DELETE FROM db.documents
 WHERE
     true;
@@ -39,3 +39,21 @@ WHERE
 DELETE FROM db.extracted_entities
 WHERE
     true;
+
+-- Create the view for user's convenience
+CREATE
+OR REPLACE VIEW db.extracted_entities_documents AS
+SELECT
+    d.title_en,
+    d.title_source_language,
+    d.body_en,
+    d.body_source_language,
+    d.summary_en,
+    d.summary_source_language,
+    d.publication_date,
+    d.url,
+    d.source,
+    e.*
+FROM
+    db.extracted_entities AS e
+    INNER JOIN db.documents AS d ON e.uuid = d.uuid;

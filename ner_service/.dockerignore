@@ -10,10 +10,7 @@ src/.ipynb_checkpoints/**
 .git/**
 src/gliner_local_copy/**
 test_resource/**
-
 **.ipynb
 .venv/**
 Dockerfile
 uv.lock
-docker-compose.yaml
-*.sql

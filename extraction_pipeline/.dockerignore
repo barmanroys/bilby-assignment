@@ -7,13 +7,9 @@ log/**
 src/.ipynb_checkpoints/**
 **.log
 **ignore
-.git/**
-src/gliner_local_copy/**
-test_resource/**
-
 **.ipynb
 .venv/**
 Dockerfile
 uv.lock
-deploy.sh
+build_image.sh
 sample_out_dump/*

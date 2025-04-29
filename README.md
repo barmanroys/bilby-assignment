@@ -58,11 +58,10 @@ The schema can be seen from the database initialisation script. Basically, two t
 * `extracted_entities`: Results of the NER pipeline with one row for each entity from each document.
 
 Instead of merging them into the same table, the schema is partially normalised to avoid storing the long document
-bodies multiple times for each entity. The unified view (combining document details and named entities) can be obtained
-by
+bodies multiple times for each entity. But I also created a unified view (combining document details and named entities) that you can query by
 
 ```sql
-SELECT * FROM extracted_entities JOIN documents ON extracted_entities.uuid=documents.uuid;
+SELECT * FROM db.extracted_entities_documents;
 ```
 
 #### Airflow Dag

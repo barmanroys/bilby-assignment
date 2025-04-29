@@ -20,7 +20,7 @@ printf "%s Starting up the services, may take a few minutes. Grab a coffee meanw
 # This waits for the services to start up, because of heavy network latency at home environment.
 # This is not a performance bottleneck, as in production, it is a one time set up for the NER service.
 # After set up, the service can be called concurrently with high throughput and milisecond level latency.
-sleep 10m
+sleep 5m
 printf "%s ETL image built, performing a test run via airflow.\n" "$(TIMESTAMP)"
 
 # Now run the image via airflow. First few lines are boilerplates to set up
