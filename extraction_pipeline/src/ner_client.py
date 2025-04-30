@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-"""This file presents the abstract interface and implementation of a data loader."""
+"""This file presents the abstract interface and an (HTTP request based) implementation of a named entity recogniser."""
 
 import os
 from contextlib import AbstractAsyncContextManager
