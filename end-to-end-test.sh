@@ -33,4 +33,4 @@ DAG_ID="ent_extraction_dag" # Defined in the dag file
 
 # The following line triggers the DAG test run. If completed successfully, the database will be populated with the extracted entities.
 time uv run --env-file .env airflow dags test $DAG_ID
-rm  --recursive --force --verbose .env airflow.cfg logs # Clean up the transient artefacts
+rm  --recursive --force --verbose .env airflow.cfg airflow.db logs # Clean up the transient artefacts
