@@ -5,3 +5,5 @@
 **uv.lock
 ner_service/src/gliner_local_copy/
 **.env
+airflow_manager/airflow.cfg
+**logs**

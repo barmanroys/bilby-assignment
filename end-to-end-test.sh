@@ -23,11 +23,14 @@ printf "%s Starting up the services, may take a few minutes. Grab a coffee meanw
 sleep 5m
 printf "%s ETL image built, performing a test run via airflow.\n" "$(TIMESTAMP)"
 
-# Now run the image via airflow. First few lines are boilerplates to set up
+# Now run the image via airflow. First few lines are boilerplates to set up the airflow environment and SQLite
 cd ../airflow_manager
 cp .env.example .env
-echo "AIRFLOW_HOME=$(pwd)/" >> .env
+echo "AIRFLOW_HOME=$(pwd)" >> .env
+uv run --env-file .env airflow db migrate
+uv run --env-file .env airflow db check
 DAG_ID="ent_extraction_dag" # Defined in the dag file
 
 # The following line triggers the DAG test run. If completed successfully, the database will be populated with the extracted entities.
 time uv run --env-file .env airflow dags test $DAG_ID
+rm  --recursive --force --verbose .env airflow.cfg logs # Clean up the transient artefacts

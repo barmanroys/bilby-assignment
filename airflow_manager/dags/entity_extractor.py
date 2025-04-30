@@ -8,7 +8,7 @@ import sys
 from airflow import DAG
 from airflow.models.baseoperator import BaseOperator
 from airflow.providers.docker.operators.docker import DockerOperator
-from datetime import timedelta
+from datetime import timedelta, datetime
 import os
 from typing import Dict
 
@@ -23,7 +23,8 @@ logging.basicConfig(
 with DAG(
     dag_id="ent_extraction_dag",  # Used in the test script to invoke this DAG
     description="Extract the named entities from the documents, match them against SoT and insert them into the relational database.",
-    schedule_interval=timedelta(days=1),
+    start_date=datetime(2025, 4, 1),
+    schedule=timedelta(days=1),
 ) as dag:
     # Define the environment variables to pass
     env_vars: Dict[str, str] = {
