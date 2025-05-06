@@ -1,0 +1,14 @@
+# Define the environment variables for the application
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-app-config
+  namespace: bilby
+data:
+  MYSQL_DATABASE: "db"
+  MYSQL_USER: "barmanroys"
+  MYSQL_PASSWORD: "gandalf1234"
+  NER_HOST: "ner"
+  MYSQL_HOST: "database"
+  TZ: "Asia/Singapore"
+  MYSQL_RANDOM_ROOT_PASSWORD: "true" # Necessary for the MySQL container startup

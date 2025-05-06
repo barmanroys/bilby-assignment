@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bilby
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: bilby
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: MYSQL_HOST
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: TZ
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: MYSQL_RANDOM_ROOT_PASSWORD
+
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-init-script
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: mysql-init-script
+          configMap:
+            name: mysql-init-script
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database # This is the service name which other containers use to access the database. Defined in the configmap
+  namespace: bilby
+  labels:
+    app: mysql
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+      name: mysql
+  selector:
+    app: mysql
+  type: ClusterIP
