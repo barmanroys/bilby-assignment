@@ -45,7 +45,7 @@ spec:
     # Defined in the ASGI service definition
     - port: 8081
       targetPort: 8081
-      name: mysql
+      name: ner
   selector:
     app: ner
   type: ClusterIP

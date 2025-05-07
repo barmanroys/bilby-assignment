@@ -11,5 +11,5 @@ src/.ipynb_checkpoints/**
 .venv/**
 Dockerfile
 uv.lock
-build_image.sh
+build_etl_image.sh
 sample_out_dump/*
