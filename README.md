@@ -6,12 +6,9 @@ The named entity recognition task is isolated from the main pipeline by a contai
 
 ##### Infrastructure Requirements
 
-Make sure you got
+Make sure you got a POSIX environment (tested on Debian Bookworm) with recent versions of the following components
 
-* recent versions
-  of [Docker daemon, compose and CLI](https://docs.docker.com/get-started/overview/) installed.
-  The development version is Docker 28.1.1.
-* a POSIX environment (I tested on Ubuntu 24.04)
+* [Docker daemon and CLI](https://docs.docker.com/get-started/overview/) for containerisation
 * [Minikube](https://minikube.sigs.k8s.io/docs/start/) as a local Kubernetes cluster manager
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) to control the cluster resources
 
@@ -22,7 +19,7 @@ Make sure you got
 * Run the named entity recogniser pipeline to insert the named entities (together with SoT matched entities) into the
   database in a separate table
 
-A user can verify the results by logging in to the database (exposed at port 3306 of the host) and checking the table.
+A user can verify the results by logging in to the database (exposed at port 3306 of the database pod, which can be tunnelled to the localhost) and checking the table.
 You can use tools like DBeaver to access the database or go to the MySQL console by
 
 ```shell
@@ -56,3 +53,4 @@ Running this has the following effects
 * Push the images to the dockerhub registry (needs access to dockerhub)
 * Deploy the services (Database and the NER) on the local minikube cluster
 * Schedule the ETL pipeline as a Kubernetes cron job
+* Start a minikube dashboard to monitor the service health
