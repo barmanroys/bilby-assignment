@@ -14,3 +14,4 @@ test_resource/**
 .venv/**
 Dockerfile
 uv.lock
+build_ner_image.sh
