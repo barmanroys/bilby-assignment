@@ -11,29 +11,10 @@ Make sure you got
 * recent versions
   of [Docker daemon, compose and CLI](https://docs.docker.com/get-started/overview/) installed.
   The development version is Docker 28.1.1.
-* [UV package manager](https://github.com/astral-sh/uv)
-* a POSIX environment (I tested on Ubuntu 24.04) with the following variables set appropriately for your
-  scripts/container to access them
+* a POSIX environment (I tested on Ubuntu 24.04)
+* [Minikube](https://minikube.sigs.k8s.io/docs/start/) as a local Kubernetes cluster manager
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) to control the cluster resources
 
-| Environment <br/> Variable | Value
-|----------------------------|---------------------------------------------------------|
-| MYSQL_DATABASE             | `db`, name of the database to be created.                                                    |
-| MYSQL_USER                       | $USER, the usual POSIX user name, will be used for database access |
-| MYSQL_PASSWORD             | Any value you want, but without space or special characters                                      |
-| NER_HOST                   | `ner`, the service name for named entity recognition                                                    |
-| MYSQL_HOST                 | `database`, the service name for the MySQL database
-
-With this setup, if you run the following from the Git root repository.
-
-```shell
-docker compose up
-```
-
-This should
-
-* fire up the local MySQL service with the above username and password
-* initialise the database with appropriate table definitions to accept data from the pipeline
-* start the named entity recogniser as a containerised service
 
 #### Effects of Running the Task
 
@@ -64,21 +45,14 @@ bodies multiple times for each entity. But I also created a unified view (combin
 SELECT * FROM db.extracted_entities_documents;
 ```
 
-#### Airflow Dag
-Following the sample codes provided, the task is made available as an Airflow DAG in the `airflow_manager/dags` directory. The DAG has only one step, as the intermediate results are kept in-process, which meets the requirement specified in the instruction. The correct incorporation of the DAG in airflow can be verified in either of two ways.
+#### Kubernetes Set up
+The `kubeops-manifests` directory contains the Kubernetes manifests for deploying the application. You can deploy the application by running the following command:
 
-##### Airflow UI
-
-For this, first fire up the database and NER services by
-
-```sh
-docker-compose up
+```shell
+time ./end-to-end-test.sh
 ```
-Then follow the instruction for setting up the Airflow standalone from the `airflow_manager` directory and the Airflow dashboard should be visible at http://localhost:8080. You can log in and trigger the DAG manually.
-
-##### Airflow CLI
-Alternatively, you can use the Airflow CLI to test the dag, which is incorporated in the `end-to-end-test.sh` script. Just run it via
-```sh
-./end-to-end-test.sh
-```
-which takes care of starting all necessary services and running the DAG. Running the above script takes about 10 minutes, but that is because there is a delay to fire up the services for the first time. As a one-time start up cost, is not a production bottleneck. Further, the delay can be minimised in a cloud environment with higher bandwidth for network connectivity (compared to my home environment).
+Running this has the following effects
+* Build the images
+* Push the images to the dockerhub registry (needs access to dockerhub)
+* Deploy the services (Database and the NER) on the local minikube cluster
+* Schedule the ETL pipeline as a Kubernetes cron job

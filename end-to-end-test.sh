@@ -24,9 +24,6 @@ kubectl get pods --namespace bilby # This to capture the pod names for NER
 # The service can be verified by the following command and accessing loalhost:8080
 # If the NER is using replicas, you can use any of the podnames to substitute the following variable $PODNAME
 # kubectl port-forward --namespace bilby $PODNAME 8080:8081
-minikube dashboard
 
-
-
-
-minikube dashboard
+# To trigger the cronjob manually, out of schedule for testing
+# kubectl create job --from=cronjob/ent-extraction-cronjob --namespace bilby test-job-run

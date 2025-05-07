@@ -1,0 +1,50 @@
+# The CronJob responsible for extracting entities from the text
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ent-extraction-cronjob
+  namespace: bilby
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: ent-extraction
+              image: barmanroys/ent-extraction
+              env:
+                - name: MYSQL_DATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: my-app-config
+                      key: MYSQL_DATABASE
+                - name: MYSQL_USER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: my-app-config
+                      key: MYSQL_USER
+                - name: MYSQL_PASSWORD
+                  valueFrom:
+                    configMapKeyRef:
+                      name: my-app-config
+                      key: MYSQL_PASSWORD
+                - name: MYSQL_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: my-app-config
+                      key: MYSQL_HOST
+                - name: TZ
+                  valueFrom:
+                    configMapKeyRef:
+                      name: my-app-config
+                      key: TZ
+                - name: NER_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: my-app-config
+                      key: NER_HOST
+
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1

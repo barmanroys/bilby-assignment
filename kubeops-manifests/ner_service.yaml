@@ -1,3 +1,4 @@
+# This file is responsible for deploying the Named Entity Recogniser service, together with the replicaset
 apiVersion: v1
 kind: Namespace
 metadata:
