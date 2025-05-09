@@ -12,7 +12,8 @@ metadata:
   labels:
     app: ner
 spec:
-  replicas: 2
+  # You can assign more replicas depending on resource availability
+  replicas: 1
   selector:
     matchLabels:
       app: ner
