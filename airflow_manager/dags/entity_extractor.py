@@ -5,6 +5,7 @@
 
 import logging
 import sys
+from typing import FrozenSet
 from airflow import DAG
 from airflow.models.baseoperator import BaseOperator
 from airflow.providers.docker.operators.docker import DockerOperator
@@ -23,21 +24,18 @@ logging.basicConfig(
 with DAG(
     dag_id="ent_extraction_dag",  # Used in the test script to invoke this DAG
     description="Extract the named entities from the documents, match them against SoT and insert them into the relational database.",
-    start_date=datetime(2025, 4, 1),
+    start_date=datetime(year=2025, month=4, day=1),
     schedule=timedelta(days=1),
 ) as dag:
-    # Define the environment variables to pass
-    env_vars: Dict[str, str] = {
-        "MYSQL_HOST": os.environ["MYSQL_HOST"],
-        "MYSQL_USER": os.environ["MYSQL_USER"],
-        "MYSQL_PASSWORD": os.environ["MYSQL_PASSWORD"],
-        "MYSQL_DATABASE": os.environ["MYSQL_DATABASE"],
-        "NER_HOST": os.environ["NER_HOST"],
-        "TZ": "Asia/Singapore",
-    }
+    # Define the environment variables to pass to the container runtime
+    variables: FrozenSet[str] = frozenset(
+        ("MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE", "NER_HOST")
+    )
+    env_vars: Dict[str, str] = {var: os.environ[var] for var in variables}
+    env_vars["TZ"]: str = "Asia/Singapore"
     run_ent_extraction: BaseOperator = DockerOperator(
         task_id="run_ent_extraction",  # Defined here
-        image="ent-extraction",  # Local Docker image, defined in the extraction pipeline image building script
+        image=os.path.join(os.environ["USER"], "ent-extraction"),  # Dockerhub image
         network_mode="bilby-assignment_bilby",  # Local Docker network, defined in the compose manifest together with the directory suffix
         auto_remove="success",  # Automatically remove the container after it exits
         environment=env_vars,  # This will pick up the environment variables

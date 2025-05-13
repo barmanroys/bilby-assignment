@@ -71,10 +71,8 @@ class DiskDataLoader(AbstractDataLoader):
         ).alias(name=CONCAT_TITLE_COL)
         # Add the concatenated column
         # Discard the irrelevant columns (keep the UUID)
-        logging.debug(msg=f"Lazily scanned parquet file from {self._data_file_}.")
-        return result.with_columns(concatenator).select(
-            pl.col(CONCAT_TITLE_COL, UUID_COL)
-        )
+        logging.debug(msg=f"Lazily scanned the parquet file from {self._data_file_}.")
+        return result.select(concatenator, pl.col(name=UUID_COL))
 
     def fetch_raw_data(self) -> pl.LazyFrame:
         """Fetch the raw data in the form of a dataframe to persist in the same database as NER result."""

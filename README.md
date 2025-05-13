@@ -12,6 +12,7 @@ Make sure you got
   of [Docker daemon, compose and CLI](https://docs.docker.com/get-started/overview/) installed.
   The development version is Docker 28.1.1.
 * [UV package manager](https://github.com/astral-sh/uv)
+* pull access to the dockerhub images `barmanroys/ent-extraction` and `barmanroys/ner-service`
 * a POSIX environment (I tested on Ubuntu 24.04) with the following variables set appropriately for your
   scripts/container to access them
 
@@ -84,4 +85,4 @@ Alternatively, you can use the Airflow CLI to test the dag, which is incorporate
 which takes care of starting all necessary services and running the DAG. Running the above script takes about 10 minutes, but that is because there is a delay to fire up the services for the first time. As a one-time start up cost, is not a production bottleneck. Further, the delay can be minimised in a cloud environment with higher bandwidth for network connectivity (compared to my home environment).
 
 #### Kubernetes Deployment
-As an alternative to Airflow deployment (as asked in the problem), my preferred method of deployment is on a Kubernetes cluster, which requires some modification of the deployment script (keeping rest of the architecture same). This has been covered in the [k8s-deployment](https://github.com/barmanroys/bilby-assignment/tree/k8s-deployment) branch.
+As an alternative to Airflow deployment (as asked in the problem), my preferred method of deployment is on a Kubernetes cluster, which requires some modification of the deployment script (keeping rest of the architecture same). This has been covered in the [k8s-deployment](https://github.com/barmanroys/bilby-assignment/tree/k8s-deployment) branch. But before using the branch, you have to make sure the images are built and available for pull from DockerHub.

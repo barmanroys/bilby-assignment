@@ -6,4 +6,5 @@
 ner_service/src/gliner_local_copy/
 **.env
 airflow_manager/airflow.*
+airflow_manager/standalone_admin_password.txt
 **logs**

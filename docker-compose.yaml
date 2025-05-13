@@ -20,9 +20,7 @@ services:
       - "bilby"
 
   ner:
-    build:
-      context: ./ner_service/ # Directory containing the Dockerfile
-      dockerfile: Dockerfile
+    image: barmanroys/ner-service
     container_name: ner-service-container
     restart: "no"
     environment:
