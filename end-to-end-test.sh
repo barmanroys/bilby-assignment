@@ -13,11 +13,6 @@
 
 minikube delete
 set -e
-cd ner_service/
-./build_ner_image.sh
-cd ../extraction_pipeline/
-./build_etl_image.sh
-cd ..
 minikube start --nodes=3
 kubectl apply --filename ./kubeops-manifests
 kubectl get pods --namespace bilby # This to capture the pod names for NER

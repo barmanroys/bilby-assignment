@@ -12,6 +12,8 @@ Make sure you got a POSIX environment (tested on Debian Bookworm) with recent ve
 * [Minikube](https://minikube.sigs.k8s.io/docs/start/) as a local Kubernetes cluster manager
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) to control the cluster resources
 
+Further, make sure your minikube cluster can pull the public images `barmanroys/ent-extraction` and `barmanroys/ner-service` from Dockerhub.
+
 
 #### Effects of Running the Task
 
