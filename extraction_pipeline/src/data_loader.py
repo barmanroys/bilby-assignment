@@ -53,7 +53,7 @@ class DiskDataLoader(AbstractDataLoader):
     follow the same method signature. Following the clean architecture principle, the data source is a detail.
     """
 
-    def __init__(self, path: str = os.path.join(DATA_DIR, DOC_SOURCE)):
+    def __init__(self, path: str):
         """Supply the data path."""
         self._data_file_: str = path
 
@@ -61,19 +61,29 @@ class DiskDataLoader(AbstractDataLoader):
         """
         Fetch the latest data by reading the parquet file.
         The downstream process needs only the UUID and the body. To form the body, we have concatenated the title and
-        body in both languages (English and Chinese). The rest of the columns
-        are discarded from any downstream processing.
+        body in both languages (English and Chinese). The other columns are discarded from any downstream processing.
         """
-        result: pl.LazyFrame = pl.scan_parquet(source=self._data_file_)
         # Concatenate the four relevant columns to form a unified title column
         concatenator: pl.Expr = pl.concat_str(
             exprs=pl.col(EN_TITLE_COL, EN_BODY_COL, SOURCE_TITLE_COL, SOURCE_BODY_COL)
         ).alias(name=CONCAT_TITLE_COL)
-        # Add the concatenated column
-        # Discard the irrelevant columns (keep the UUID)
-        logging.debug(msg=f"Lazily scanned the parquet file from {self._data_file_}.")
-        return result.select(concatenator, pl.col(name=UUID_COL))
+        logging.debug(msg=f"Lazily scanning the data file from {self._data_file_}.")
+        return self.fetch_raw_data().select(concatenator, pl.col(name=UUID_COL))
 
     def fetch_raw_data(self) -> pl.LazyFrame:
         """Fetch the raw data in the form of a dataframe to persist in the same database as NER result."""
         return pl.scan_parquet(source=self._data_file_)
+
+
+class DataLoaderFactory:
+    """Factory class to get a data loader."""
+
+    def __init__(self, directory: str = DATA_DIR, file: str = DOC_SOURCE):
+        """Initialise with the default values."""
+        self._dir_: str = directory
+        self._file_: str = file
+        logging.debug(msg=f"Data loader factory initialised with {self._dir_}.")
+
+    def get_data_loader(self) -> AbstractDataLoader:
+        """Return the data loader."""
+        return DiskDataLoader(path=os.path.join(self._dir_, self._file_))

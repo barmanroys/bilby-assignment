@@ -6,7 +6,7 @@
 import asyncio
 from typing import Iterator, Iterable
 
-from data_loader import AbstractDataLoader, DiskDataLoader, pl, logging
+from data_loader import AbstractDataLoader, DataLoaderFactory, pl, logging
 from doc_processor import AbstractAsyncDocProcessor, DocumentProcessorFactory
 
 
@@ -38,6 +38,6 @@ if __name__ == "__main__":
     asyncio.run(
         main=Main(
             doc_processor=DocumentProcessorFactory().get_document_processor(),
-            dl=DiskDataLoader(),
+            dl=DataLoaderFactory().get_data_loader(),
         ).run()
     )
