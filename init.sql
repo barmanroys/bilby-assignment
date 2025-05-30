@@ -1,3 +1,6 @@
+-- Select the same name as the database for the schema
+CREATE SCHEMA db;
+
 -- Raw document table
 CREATE TABLE IF NOT EXISTS db.documents (
     uuid BYTEA PRIMARY KEY NOT NULL CHECK (LENGTH (uuid) = 16),

@@ -8,6 +8,8 @@ services:
       POSTGRES_USER: ${USER}
       POSTGRES_PASSWORD: ${MYSQL_PASSWORD}
       TZ: "Asia/Singapore"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       # Expose the service to enable the end user to verify when the tables are populated
       - "5432:5432"
