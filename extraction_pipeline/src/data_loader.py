@@ -13,7 +13,7 @@ import polars as pl
 logging.basicConfig(
     format="%(asctime)s|%(levelname)s: %(message)s",
     datefmt="%H:%M:%S, %d-%b-%Y",
-    level=logging.INFO,
+    level=logging.DEBUG,
 )
 
 # Load basic configurations and the default hugging face path

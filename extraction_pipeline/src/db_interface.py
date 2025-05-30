@@ -55,19 +55,24 @@ class EngineContext(AbstractContextManager):
         logging.debug(msg="Engine disposed.")
 
 
-class MySQLPersistenceClient(AbstractPersistenceInterface):
+class PGSQLClient(AbstractPersistenceInterface):
     """Implement the client to persist the results into MySQL"""
 
     def __init__(
         self,
         engine: EngineContext,
         table_name: str = config.get(section="db", option="TABLE"),
+        schema_name: str = os.environ["MYSQL_DATABASE"],
     ):
         """Initialise the client with an asynchronous engine."""
-        self._engine_: EngineContext = engine
-        self._table_name_: str = table_name
         # This expression is used to convert the UUID column to Binary for efficient storage.
         # It is kept as a variable here to avoid duplication inside the methods.
+        self._engine_: EngineContext = engine
+        self._table_name_: str = table_name
+        self._schema_name_: str = (
+            schema_name  # PGSQL has another level of hierarchy as a schema name
+        )
+
         self._converter_: pl.Expr = pl.col(name=UUID_COL).map_elements(
             function=lambda doc_id: uuid.UUID(hex=doc_id).bytes,
             return_dtype=pl.Binary,
@@ -81,7 +86,7 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
         with self._engine_ as engine:
             try:
                 row_count: int = data.write_database(
-                    table_name=table_name,
+                    table_name=f"{self._schema_name_}.{table_name}",
                     connection=engine,
                     if_table_exists="append",
                 )
@@ -101,7 +106,7 @@ class MySQLPersistenceClient(AbstractPersistenceInterface):
         results = results.with_columns(self._converter_)
         with self._engine_ as engine:
             row_count: int = results.write_database(
-                table_name=self._table_name_,
+                table_name=f"{self._schema_name_}.{self._table_name_}",
                 connection=engine,
                 if_table_exists="append",
             )
@@ -131,4 +136,4 @@ class PersistenceClientFactory:
 
     def get_client(self) -> AbstractPersistenceInterface:
         """Get the MySQL client."""
-        return MySQLPersistenceClient(engine=EngineContext(uri=self.uri))
+        return PGSQLClient(engine=EngineContext(uri=self.uri))

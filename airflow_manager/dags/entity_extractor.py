@@ -35,7 +35,7 @@ with DAG(
     env_vars["TZ"]: str = "Asia/Singapore"
     run_ent_extraction: BaseOperator = DockerOperator(
         task_id="run_ent_extraction",  # Defined here
-        image=os.path.join(os.environ["USER"], "ent-extraction"),  # Dockerhub image
+        image="ent-extraction",  # Do not fetch from Dockerhub, as that is earmarked for Kubernetes integration
         network_mode="bilby-assignment_bilby",  # Local Docker network, defined in the compose manifest together with the directory suffix
         auto_remove="success",  # Automatically remove the container after it exits
         environment=env_vars,  # This will pick up the environment variables

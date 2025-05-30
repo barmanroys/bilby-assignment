@@ -7,7 +7,7 @@
 IMAGE=ent-extraction # This is the definition, used in the DAG definition
 docker build --tag=$IMAGE ./
 docker tag $IMAGE $USER/$IMAGE
-docker push  $USER/$IMAGE # This will work because my docker repository username is same as the system username
+
 
 # # Supply the necessary environment variables from the host for access credentials and network inclusion to run the container without scheduler
 # CONTAINER=extraction_container # Local variable, no impact outside this file.

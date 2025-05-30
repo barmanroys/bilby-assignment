@@ -16,6 +16,16 @@ services:
     restart: "no"
     networks:
       - "bilby"
+
+  ner:
+    image: barmanroys/ner-service
+    container_name: ner-service-container
+    restart: "no"
+    environment:
+      TZ: "Asia/Singapore"
+    networks:
+      - "bilby"
+
 networks:
   # Use this network for service discovery by among containers
   # As per docker documentation, a prefix based on the parent directory name is added to the network name
