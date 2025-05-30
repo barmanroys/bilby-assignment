@@ -21,4 +21,4 @@ Make sure you got
 | NER_HOST                   | `ner`, the service name for named entity recognition                                                    |
 | MYSQL_HOST                 | `database`, the service name for the MySQL database
 
-With this setup, if you run the following from the Git root repository.
+With this setup, you can proceed to test the entire pipeline following the same procedure as in the master branch. 
