@@ -1,12 +1,12 @@
 -- Raw document table
 CREATE TABLE IF NOT EXISTS db.documents (
-    uuid BINARY(16) PRIMARY KEY NOT NULL, -- The Data type is chosen to make the the storage more space efficient
+    uuid BYTEA PRIMARY KEY NOT NULL CHECK (LENGTH (uuid) = 16),
     title_en TEXT NOT NULL,
     title_source_language TEXT NOT NULL,
-    body_en LONGTEXT NOT NULL,
-    body_source_language LONGTEXT NOT NULL,
-    summary_en MEDIUMTEXT NOT NULL,
-    summary_source_language MEDIUMTEXT NOT NULL,
+    body_en TEXT NOT NULL,
+    body_source_language TEXT NOT NULL,
+    summary_en TEXT NOT NULL,
+    summary_source_language TEXT NOT NULL,
     publication_date VARCHAR(15) NOT NULL,
     url VARCHAR(100) NOT NULL,
     source VARCHAR(50) NOT NULL
@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS db.documents (
 
 -- Entity table
 CREATE TABLE IF NOT EXISTS db.extracted_entities (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    uuid BINARY(16) NOT NULL,
-    entity_type ENUM ('Person', 'Company', 'Location') NOT NULL,
+    id SERIAL PRIMARY KEY, -- Use SERIAL for auto-incrementing IDs
+    uuid BYTEA NOT NULL CHECK (LENGTH (uuid) = 16),
+    entity_type VARCHAR(8) NOT NULL CHECK (entity_type IN ('Person', 'Company', 'Location')), -- Pgsql lacks enum
     entity_text VARCHAR(100) NOT NULL,
     start_pos INT NOT NULL,
     end_pos INT NOT NULL,
@@ -24,14 +24,16 @@ CREATE TABLE IF NOT EXISTS db.extracted_entities (
     is_matched BOOLEAN NOT NULL,
     matched_entity_id VARCHAR(100) DEFAULT NULL,
     matched_entity_name VARCHAR(100) DEFAULT NULL,
-    updated_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- Index for efficient lookup on these columns
-    INDEX idx_uuid (uuid),
-    INDEX idx_matched_entity_id (matched_entity_id),
-    FOREIGN KEY (uuid) REFERENCES documents (uuid) ON DELETE CASCADE -- Link back to the document table using this column as a foreign key
-) DEFAULT CHARSET = utf8mb4;
+    updated_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (uuid) REFERENCES db.documents (uuid) ON DELETE CASCADE -- Link back to the document table
+);
 
--- Reset the database to ensure a clean slate and bypass any InnoDB caching
+-- PGSQL lacks inline index creation
+CREATE INDEX idx_uuid ON db.extracted_entities (uuid);
+
+CREATE INDEX idx_matched_entity_id ON db.extracted_entities (matched_entity_id);
+
+-- Reset the database to ensure a clean slate and bypass any storage caching
 DELETE FROM db.documents
 WHERE
     true;

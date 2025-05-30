@@ -1,33 +1,19 @@
 services:
   database:
-    image: mysql
+    image: postgres:latest
     container_name: database-container
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      # mysql -h 127.0.0.1 -p
-      MYSQL_USER: ${USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      # psql --host localhost --port 5432 --username $USER --dbname $MYSQL_DATABASE
+      POSTGRES_DB: ${MYSQL_DATABASE}
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${MYSQL_PASSWORD}
       TZ: "Asia/Singapore"
     ports:
       # Expose the service to enable the end user to verify when the tables are populated
-      - "3306:3306"
+      - "5432:5432"
     restart: "no"
-    volumes:
-      # This directory is used to initialise the database. Use read-only mount
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - "bilby"
-
-  ner:
-    image: barmanroys/ner-service
-    container_name: ner-service-container
-    restart: "no"
-    environment:
-      TZ: "Asia/Singapore"
-    networks:
-      - "bilby"
-
 networks:
   # Use this network for service discovery by among containers
   # As per docker documentation, a prefix based on the parent directory name is added to the network name
