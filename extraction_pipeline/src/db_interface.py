@@ -56,7 +56,7 @@ class EngineContext(AbstractContextManager):
 
 
 class PGSQLClient(AbstractPersistenceInterface):
-    """Implement the client to persist the results into MySQL"""
+    """Implement the client to persist the results into PGSQL"""
 
     def __init__(
         self,
