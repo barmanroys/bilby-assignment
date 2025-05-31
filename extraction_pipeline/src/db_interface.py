@@ -81,7 +81,7 @@ class PGSQLClient(AbstractPersistenceInterface):
     def persist_raw_data(
         self, data: pl.DataFrame, table_name: str = "documents"
     ) -> None:
-        """Use this method to persist the document data with full texts in the MySQL table."""
+        """Use this method to persist the document data with full texts in the database."""
         data = data.with_columns(self._converter_)
         with self._engine_ as engine:
             try:
@@ -135,5 +135,5 @@ class PersistenceClientFactory:
         logging.debug(msg="Factory initialised with database access details")
 
     def get_client(self) -> AbstractPersistenceInterface:
-        """Get the MySQL client."""
+        """Get the PostgreSQL client."""
         return PGSQLClient(engine=EngineContext(uri=self.uri))
